@@ -1,0 +1,334 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}{% if object %}Edit{{ else }}Add{{ endif %} Recipe - My Recipe Book{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-title {
+        font-size: 2rem;
+        color: #2d3748;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        font-size: 1.3rem;
+        color: #4a5568;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #4a5568;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .errorlist {
+        list-style: none;
+        color: #f56565;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .helptext {
+        font-size: 0.85rem;
+        color: #a0aec0;
+        margin-top: 0.25rem;
+    }
+
+    .ingredients-formset {
+        background: #f7fafc;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .ingredient-form {
+        background: white;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .ingredient-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 0.5fr auto;
+        gap: 1rem;
+        align-items: start;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-submit {
+        background: #667eea;
+        color: white;
+        font-weight: 600;
+    }
+
+    .btn-submit:hover {
+        background: #5568d3;
+    }
+
+    .btn-cancel {
+        background: #e2e8f0;
+        color: #4a5568;
+        margin-left: 1rem;
+    }
+
+    .btn-cancel:hover {
+        background: #cbd5e0;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #e2e8f0;
+    }
+
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+        cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .ingredient-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-container {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="form-title">
+        {% if object %}Edit Recipe{% else %}Add New Recipe{% endif %}
+    </h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-section">
+            <h2 class="section-header">📋 Basic Information</h2>
+
+            <div class="form-group">
+                {{ form.title.errors }}
+                <label for="{{ form.title.id_for_label }}">Recipe Title *</label>
+                {{ form.title }}
+                {% if form.title.help_text %}
+                <p class="helptext">{{ form.title.help_text }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.description.errors }}
+                <label for="{{ form.description.id_for_label }}">Description *</label>
+                {{ form.description }}
+                {% if form.description.help_text %}
+                <p class="helptext">{{ form.description.help_text }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.image.errors }}
+                <label for="{{ form.image.id_for_label }}">Recipe Image</label>
+                {{ form.image }}
+                {% if object and object.image %}
+                <p style="margin-top: 0.5rem; color: #4a5568;">Current image: {{ object.image.name }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-header">⏱️ Cooking Details</h2>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    {{ form.prep_time.errors }}
+                    <label for="{{ form.prep_time.id_for_label }}">Prep Time (minutes) *</label>
+                    {{ form.prep_time }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.cook_time.errors }}
+                    <label for="{{ form.cook_time.id_for_label }}">Cook Time (minutes) *</label>
+                    {{ form.cook_time }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.servings.errors }}
+                    <label for="{{ form.servings.id_for_label }}">Servings *</label>
+                    {{ form.servings }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.difficulty.errors }}
+                    <label for="{{ form.difficulty.id_for_label }}">Difficulty *</label>
+                    {{ form.difficulty }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-header">🛒 Ingredients</h2>
+
+            <div class="ingredients-formset">
+                {{ ingredient_formset.management_form }}
+                {{ ingredient_formset.non_form_errors }}
+
+                {% for ingredient_form in ingredient_formset %}
+                <div class="ingredient-form">
+                    {{ ingredient_form.non_field_errors }}
+                    <div class="ingredient-grid">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Name</label>
+                            {{ ingredient_form.name }}
+                            {{ ingredient_form.name.errors }}
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Quantity</label>
+                            {{ ingredient_form.quantity }}
+                            {{ ingredient_form.quantity.errors }}
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Unit</label>
+                            {{ ingredient_form.unit }}
+                            {{ ingredient_form.unit.errors }}
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Order</label>
+                            {{ ingredient_form.order }}
+                            {{ ingredient_form.order.errors }}
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            {% if ingredient_form.instance.pk %}
+                            <label>Delete?</label>
+                            {{ ingredient_form.DELETE }}
+                            {% endif %}
+                            {{ ingredient_form.id }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-header">📝 Instructions</h2>
+
+            <div class="form-group">
+                {{ form.instructions.errors }}
+                <label for="{{ form.instructions.id_for_label }}">Step-by-Step Instructions *</label>
+                {{ form.instructions }}
+                {% if form.instructions.help_text %}
+                <p class="helptext">{{ form.instructions.help_text }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.notes.errors }}
+                <label for="{{ form.notes.id_for_label }}">Notes & Tips</label>
+                {{ form.notes }}
+                {% if form.notes.help_text %}
+                <p class="helptext">{{ form.notes.help_text }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-header">🏷️ Categories</h2>
+
+            <div class="form-group">
+                {{ form.categories.errors }}
+                <div class="checkbox-group">
+                    {% for checkbox in form.categories %}
+                    {{ checkbox }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-submit">
+                {% if object %}Update Recipe{% else %}Create Recipe{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'recipe_detail' object.pk %}{% else %}{% url 'recipe_list' %}{% endif %}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

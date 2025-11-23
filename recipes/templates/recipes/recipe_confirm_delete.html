@@ -1,0 +1,98 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Delete {{ recipe.title }} - My Recipe Book{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 2rem;
+        max-width: 600px;
+        margin: 2rem auto;
+        text-align: center;
+    }
+
+    .warning-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .delete-title {
+        font-size: 1.8rem;
+        color: #2d3748;
+        margin-bottom: 1rem;
+    }
+
+    .delete-message {
+        color: #718096;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .recipe-name {
+        font-weight: 700;
+        color: #f56565;
+    }
+
+    .delete-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 600;
+    }
+
+    .btn-delete {
+        background: #f56565;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: #e53e3e;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+    }
+
+    .btn-cancel {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-cancel:hover {
+        background: #cbd5e0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="warning-icon">⚠️</div>
+    <h1 class="delete-title">Delete Recipe?</h1>
+    <p class="delete-message">
+        Are you sure you want to delete <span class="recipe-name">"{{ recipe.title }}"</span>?
+        <br>
+        This action cannot be undone and will permanently delete this recipe and all its ingredients.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="delete-actions">
+            <button type="submit" class="btn btn-delete">Yes, Delete Recipe</button>
+            <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

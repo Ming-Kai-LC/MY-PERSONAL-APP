@@ -1,0 +1,314 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}{{ recipe.title }} - My Recipe Book{% endblock %}
+
+{% block extra_css %}
+<style>
+    .recipe-detail {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .recipe-header {
+        position: relative;
+        height: 400px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 5rem;
+    }
+
+    .recipe-header img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .recipe-body {
+        padding: 2rem;
+    }
+
+    .recipe-title-section {
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .recipe-title {
+        font-size: 2.5rem;
+        color: #2d3748;
+        margin-bottom: 1rem;
+    }
+
+    .recipe-meta-bar {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        color: #4a5568;
+    }
+
+    .difficulty-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .difficulty-easy {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+
+    .difficulty-medium {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+
+    .difficulty-hard {
+        background: #feb2b2;
+        color: #742a2a;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-edit {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: #5568d3;
+    }
+
+    .btn-delete {
+        background: #f56565;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: #e53e3e;
+    }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-back:hover {
+        background: #cbd5e0;
+    }
+
+    .recipe-content-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 3rem;
+        margin-top: 2rem;
+    }
+
+    .ingredients-section,
+    .instructions-section {
+        background: #f7fafc;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ingredients-list {
+        list-style: none;
+    }
+
+    .ingredients-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+        color: #4a5568;
+    }
+
+    .ingredients-list li:last-child {
+        border-bottom: none;
+    }
+
+    .ingredient-quantity {
+        font-weight: 600;
+        color: #667eea;
+        margin-right: 0.5rem;
+    }
+
+    .instructions-text {
+        color: #4a5568;
+        line-height: 1.8;
+        white-space: pre-wrap;
+    }
+
+    .description-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #f7fafc;
+        border-radius: 8px;
+        color: #4a5568;
+        line-height: 1.8;
+    }
+
+    .notes-section {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: #fffaf0;
+        border-left: 4px solid #ed8936;
+        border-radius: 8px;
+    }
+
+    .categories-section {
+        margin-top: 2rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .category-tag {
+        background: #667eea;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .recipe-content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .recipe-header {
+            height: 250px;
+        }
+
+        .recipe-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recipe-detail">
+    <div class="recipe-header">
+        {% if recipe.image %}
+            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
+        {% else %}
+            🍽️
+        {% endif %}
+    </div>
+
+    <div class="recipe-body">
+        <div class="recipe-title-section">
+            <h1 class="recipe-title">{{ recipe.title }}</h1>
+
+            <div class="recipe-meta-bar">
+                <span class="meta-item">⏱️ Prep: {{ recipe.prep_time }} min</span>
+                <span class="meta-item">🔥 Cook: {{ recipe.cook_time }} min</span>
+                <span class="meta-item">⏲️ Total: {{ recipe.total_time }} min</span>
+                <span class="meta-item">👥 Servings: {{ recipe.servings }}</span>
+                <span class="difficulty-badge difficulty-{{ recipe.difficulty }}">
+                    {{ recipe.get_difficulty_display }}
+                </span>
+            </div>
+
+            {% if recipe.categories.exists %}
+            <div class="categories-section">
+                {% for category in recipe.categories.all %}
+                <span class="category-tag">{{ category.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="action-buttons">
+                <a href="{% url 'recipe_update' recipe.pk %}" class="btn btn-edit">Edit Recipe</a>
+                <a href="{% url 'recipe_delete' recipe.pk %}" class="btn btn-delete">Delete Recipe</a>
+                <a href="{% url 'recipe_list' %}" class="btn btn-back">Back to Recipes</a>
+            </div>
+        </div>
+
+        {% if recipe.description %}
+        <div class="description-section">
+            <p>{{ recipe.description }}</p>
+        </div>
+        {% endif %}
+
+        <div class="recipe-content-grid">
+            <div>
+                <div class="ingredients-section">
+                    <h2 class="section-title">🛒 Ingredients</h2>
+                    {% if recipe.ingredients.exists %}
+                    <ul class="ingredients-list">
+                        {% for ingredient in recipe.ingredients.all %}
+                        <li>
+                            <span class="ingredient-quantity">{{ ingredient.quantity }}{% if ingredient.unit %} {{ ingredient.unit }}{% endif %}</span>
+                            {{ ingredient.name }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p style="color: #a0aec0;">No ingredients listed yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <div class="instructions-section">
+                    <h2 class="section-title">📝 Instructions</h2>
+                    <div class="instructions-text">{{ recipe.instructions }}</div>
+                </div>
+
+                {% if recipe.notes %}
+                <div class="notes-section">
+                    <h3 class="section-title">💡 Notes & Tips</h3>
+                    <p style="color: #4a5568; line-height: 1.8;">{{ recipe.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; color: #a0aec0; font-size: 0.9rem;">
+            <p>Created: {{ recipe.created_at|date:"F d, Y" }}</p>
+            {% if recipe.updated_at != recipe.created_at %}
+            <p>Last updated: {{ recipe.updated_at|date:"F d, Y" }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
