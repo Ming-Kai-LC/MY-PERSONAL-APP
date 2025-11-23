@@ -5,74 +5,93 @@
 {% block extra_css %}
 <style>
     .delete-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        padding: 2rem;
-        max-width: 600px;
-        margin: 2rem auto;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+        padding: 3rem;
+        max-width: 650px;
+        margin: 3rem auto;
         text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        animation: fadeIn 0.4s ease-out;
     }
 
     .warning-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
     }
 
     .delete-title {
-        font-size: 1.8rem;
-        color: #2d3748;
-        margin-bottom: 1rem;
+        font-size: 2.25rem;
+        color: var(--gray-900);
+        margin-bottom: 1.5rem;
+        font-weight: 800;
     }
 
     .delete-message {
-        color: #718096;
-        margin-bottom: 2rem;
-        line-height: 1.6;
+        color: var(--gray-700);
+        margin-bottom: 2.5rem;
+        line-height: 1.8;
+        font-size: 1.1rem;
     }
 
     .recipe-name {
-        font-weight: 700;
-        color: #f56565;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--danger), #dc2626);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .delete-actions {
         display: flex;
-        gap: 1rem;
+        gap: 1.25rem;
         justify-content: center;
         flex-wrap: wrap;
     }
 
     .btn {
-        padding: 0.75rem 2rem;
+        padding: 1rem 2.5rem;
         border: none;
-        border-radius: 8px;
-        font-size: 1rem;
+        border-radius: 12px;
+        font-size: 1.05rem;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-decoration: none;
-        display: inline-block;
-        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
     }
 
     .btn-delete {
-        background: #f56565;
+        background: linear-gradient(135deg, var(--danger), #dc2626);
         color: white;
+        box-shadow: var(--shadow-md);
     }
 
     .btn-delete:hover {
-        background: #e53e3e;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-xl);
     }
 
     .btn-cancel {
-        background: #e2e8f0;
-        color: #4a5568;
+        background: var(--gray-200);
+        color: var(--gray-700);
     }
 
     .btn-cancel:hover {
-        background: #cbd5e0;
+        background: var(--gray-300);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
     }
 </style>
 {% endblock %}
@@ -83,15 +102,15 @@
     <h1 class="delete-title">Delete Recipe?</h1>
     <p class="delete-message">
         Are you sure you want to delete <span class="recipe-name">"{{ recipe.title }}"</span>?
-        <br>
+        <br><br>
         This action cannot be undone and will permanently delete this recipe and all its ingredients.
     </p>
 
     <form method="post">
         {% csrf_token %}
         <div class="delete-actions">
-            <button type="submit" class="btn btn-delete">Yes, Delete Recipe</button>
-            <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-cancel">Cancel</a>
+            <button type="submit" class="btn btn-delete">🗑️ Yes, Delete Recipe</button>
+            <a href="{% url 'recipe_detail' recipe.pk %}" class="btn btn-cancel">← Cancel</a>
         </div>
     </form>
 </div>
